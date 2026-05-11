@@ -7,15 +7,25 @@ import { PetStateMachine } from './pet/PetStateMachine.js';
 import { OpenClawConnector } from './pet/OpenClawConnector.js';
 import { PetScene } from './pet/PetScene.js';
 
-// Read config from env vars (set by extension)
-const GATEWAY_URL = window.electronAPI?.getEnv?.('GATEWAY_URL') || 'ws://127.0.0.1:18789';
-const GATEWAY_TOKEN = window.electronAPI?.getEnv?.('GATEWAY_TOKEN') || '';
-const IDLE_TIMEOUT = parseInt(window.electronAPI?.getEnv?.('IDLE_TIMEOUT') || '30');
-const SHOW_BUBBLE = window.etool?.getEnv?.('SHOW_BUBBLE_ON_TOOL') !== 'false';
-const BUBBLE_DURATION = parseInt(window.electronAPI?.getEnv?.('BUBBLE_DURATION') || '3000');
+// Read config from env vars (set by extension / electron)
+const GATEWAY_URL = (window.electronAPI && window.electronAPI.getEnv)
+  ? window.electronAPI.getEnv('GATEWAY_URL')
+  : 'ws://127.0.0.1:18789';
+const GATEWAY_TOKEN = (window.electronAPI && window.electronAPI.getEnv)
+  ? window.electronAPI.getEnv('GATEWAY_TOKEN')
+  : '';
+const IDLE_TIMEOUT = parseInt(
+  (window.electronAPI && window.electronAPI.getEnv('IDLE_TIMEOUT')) || '30'
+);
+const SHOW_BUBBLE = (window.electronAPI && window.electronAPI.getEnv('SHOW_BUBBLE_ON_TOOL'))
+  ? window.electronAPI.getEnv('SHOW_BUBBLE_ON_TOOL') !== 'false'
+  : true;
+const BUBBLE_DURATION = parseInt(
+  (window.electronAPI && window.electronAPI.getEnv('BUBBLE_DURATION')) || '3000'
+);
 
 // Tool bubble messages
-const TOOL_BUBBLES: Record<string, string> = {
+const TOOL_BUBBLES = {
   web_search: '搜索中...',
   web_fetch: '读取网页...',
   exec: '执行命令...',
@@ -29,56 +39,55 @@ const TOOL_BUBBLES: Record<string, string> = {
 };
 
 function init() {
-  // 1. Create state machine
-  const sm = new PetStateMachine(IDLE_TIMEOUT);
+  // 1. State machine
+  var sm = new PetStateMachine(IDLE_TIMEOUT);
 
-  // 2. Create scene
-  const container = document.getElementById('pet-container')!;
-  const scene = new PetScene(container as HTMLElement);
+  // 2. Scene
+  var container = document.getElementById('pet-container');
+  var scene = new PetScene(container, 120);
 
-  // 3. Create connector
-  const connector = new OpenClawConnector({
+  // 3. Connector
+  var connector = new OpenClawConnector({
     wsUrl: GATEWAY_URL,
     gatewayToken: GATEWAY_TOKEN || undefined,
-    onToolCall: (data) => {
-      const toolName = data?.tool || data?.name || 'unknown';
+    onToolCall: function(data) {
+      var toolName = (data && data.tool) || (data && data.name) || 'unknown';
       sm.toolCall(toolName);
       if (SHOW_BUBBLE) {
-        const msg = TOOL_BUBBLES[toolName] || `调用 ${toolName}...`;
+        var msg = TOOL_BUBBLES[toolName] || '调用 ' + toolName + '...';
         scene.showBubble(msg, BUBBLE_DURATION);
       }
     },
-    onSessionStart: () => {
+    onSessionStart: function() {
       sm.taskStart();
       scene.showBubble('任务开始~', BUBBLE_DURATION);
     },
-    onSessionEnd: () => {
+    onSessionEnd: function() {
       sm.taskEnd();
       scene.showBubble('完成了! ✨', BUBBLE_DURATION);
     },
-    onAssistantMessage: (data) => {
+    onAssistantMessage: function() {
       sm.interact('message');
     },
-    onConnect: () => {
+    onConnect: function() {
       console.log('🐾 Connected to OpenClaw');
       scene.showBubble('已连接到 OpenClaw ✨', 3000);
     },
-    onDisconnect: () => {
+    onDisconnect: function() {
       console.log('🐾 Disconnected from OpenClaw');
       scene.showBubble('断开连接...', 3000);
     },
   });
 
   // 4. Sync state machine → scene
-  sm.onStateChange((state) => {
+  sm.onStateChange(function(state) {
     scene.updateState(state);
-    scene.showBubble(); // Show random bubble for new state
+    scene.showBubble(null);
 
-    // Update badge
-    const dot = document.getElementById('state-dot');
-    const label = document.getElementById('state-label');
+    var dot = document.getElementById('state-dot');
+    var label = document.getElementById('state-label');
     if (dot && label) {
-      const colors: Record<string, string> = {
+      var colors = {
         idle: '#6c5ce7', busy: '#00b894', sulky: '#e17055',
         happy: '#fdcb6e', sleepy: '#74b9ff', alert: '#ff7675',
       };
@@ -87,26 +96,30 @@ function init() {
     }
   });
 
-  // 5. Connect to Gateway
-  connector.connect().catch(() => {
+  // 5. Connect
+  connector.connect().catch(function() {
     console.log('⚠️ Gateway not available, running standalone');
     scene.showBubble('等待 OpenClaw 连接...', 5000);
   });
 
-  // 6. Settings button
-  document.getElementById('settings-btn')?.addEventListener('click', () => {
-    window.electronAPI?.openSettings?.();
-  });
+  // 6. Settings
+  var btn = document.getElementById('settings-btn');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      if (window.electronAPI && window.electronAPI.openSettings) {
+        window.electronAPI.openSettings();
+      }
+    });
+  }
 
-  // Cleanup
-  window.addEventListener('beforeunload', () => {
+  // 7. Cleanup
+  window.addEventListener('beforeunload', function() {
     connector.disconnect();
     sm.dispose();
     scene.destroy();
   });
 }
 
-// Wait for DOM ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {
