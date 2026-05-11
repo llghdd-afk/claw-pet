@@ -38,6 +38,7 @@ export class PetScene {
     this.canvas.height = size;
     this.canvas.style.cursor = 'grab';
     this.canvas.style.userSelect = 'none';
+    this.canvas.style.background = 'rgba(120, 80, 200, 0.15)';
     parent.appendChild(this.canvas);
 
     this.ctx = this.canvas.getContext('2d');
@@ -230,8 +231,19 @@ export class PetScene {
     ctx.fillStyle = 'rgba(255,255,255,0.95)';
     ctx.strokeStyle = '#ddd';
     ctx.lineWidth = 1;
+    // Draw rounded rect manually for Electron 30 compatibility
+    var bx2 = bx, by2 = by, bw2 = bw, bh2 = bh, br = 8;
     ctx.beginPath();
-    ctx.roundRect(bx, by, bw, bh, 8);
+    ctx.moveTo(bx2 + br, by2);
+    ctx.lineTo(bx2 + bw2 - br, by2);
+    ctx.quadraticCurveTo(bx2 + bw2, by2, bx2 + bw2, by2 + br);
+    ctx.lineTo(bx2 + bw2, by2 + bh2 - br);
+    ctx.quadraticCurveTo(bx2 + bw2, by2 + bh2, bx2 + bw2 - br, by2 + bh2);
+    ctx.lineTo(bx2 + br, by2 + bh2);
+    ctx.quadraticCurveTo(bx2, by2 + bh2, bx2, by2 + bh2 - br);
+    ctx.lineTo(bx2, by2 + br);
+    ctx.quadraticCurveTo(bx2, by2, bx2 + br, by2);
+    ctx.closePath();
     ctx.fill();
     ctx.stroke();
 
