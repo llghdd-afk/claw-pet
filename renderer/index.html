@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawPet</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: transparent;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #pet-container {
+      position: fixed; inset: 0;
+      display: flex; justify-content: center; align-items: center;
+    }
+    #state-badge {
+      position: fixed; bottom: 12px; left: 12px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.9); border: 1px solid #eee;
+      border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #333;
+      backdrop-filter: blur(8px); z-index: 50;
+    }
+    #state-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    #settings-btn {
+      position: fixed; top: 12px; right: 12px;
+      background: rgba(255,255,255,0.8); border: 1px solid #ddd;
+      border-radius: 50%; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 14px; z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div id="pet-container"></div>
+  <div id="state-badge">
+    <div id="state-dot" style="background: #6c5ce7"></div>
+    <span id="state-label">idle</span>
+  </div>
+  <div id="settings-btn" title="Settings">⚙</div>
+  <script type="module" src="./renderer/app.js"></script>
+</body>
+</html>

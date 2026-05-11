@@ -1,0 +1,33 @@
+# Node
+node_modules/
+dist/
+*.tsbuildinfo
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.local
+
+# User data (PRIVACY: never commit user customizations)
+# Users put their custom sprites/config here
+renderer/sprites/custom/
+*.custom.*
+settings.local.json
+
+# Lock files (runtime only)
+*.lock
+!package-lock.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

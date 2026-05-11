@@ -1,0 +1,65 @@
+{
+  "id": "claw-pet",
+  "name": "ClawPet",
+  "description": "A cute desktop pet that lives on your screen — reacts to AI status, tool calls, and has personality",
+  "version": "0.1.0",
+  "author": "",
+  "license": "MIT",
+  "homepage": "https://github.com/llghd/claw-pet",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "enabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable/disable the desktop pet"
+      },
+      "gatewayUrl": {
+        "type": "string",
+        "default": "ws://127.0.0.1:18789",
+        "description": "OpenClaw Gateway WebSocket URL"
+      },
+      "gatewayToken": {
+        "type": "string",
+        "default": "",
+        "description": "Gateway authentication token (leave empty for auto-detect)"
+      },
+      "alwaysOnTop": {
+        "type": "boolean",
+        "default": true,
+        "description": "Window always on top"
+      },
+      "theme": {
+        "type": "string",
+        "default": "default",
+        "enum": ["default", "cat", "robot", "custom"],
+        "description": "Pet visual theme"
+      },
+      "customSpritePath": {
+        "type": "string",
+        "default": "",
+        "description": "Path to custom sprite sheet (PNG)"
+      },
+      "idleTimeoutMinutes": {
+        "type": "number",
+        "default": 30,
+        "minimum": 5,
+        "maximum": 120,
+        "description": "Minutes of no interaction before sulky mode"
+      },
+      "showBubbleOnToolCall": {
+        "type": "boolean",
+        "default": true,
+        "description": "Show speech bubble when AI calls a tool"
+      },
+      "bubbleDuration": {
+        "type": "number",
+        "default": 3000,
+        "minimum": 1000,
+        "maximum": 10000,
+        "description": "Speech bubble display duration in ms"
+      }
+    }
+  }
+}
