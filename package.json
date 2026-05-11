@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A cute desktop pet for OpenClaw — displays AI status, reacts to tool calls, and has personality",
   "type": "module",
-  "main": "./extension/index.js",
+  "main": "./extension/index.mjs",
   "scripts": {
     "build:renderer": "node esbuild.config.mjs",
     "build:extension": "tsc",
